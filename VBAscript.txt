@@ -1,0 +1,178 @@
+Sub Stock()
+'create script that will loop through stocks (1yr) and output...
+'1 - the ticker symbol
+'2 - yr. change from opening price at beginning of given yr to closing
+'price at the end of that yr
+'3- % change from opening price at beginning of give yr to closing price
+'at the end of that yr
+'4 - total stock volume of the stock
+'5 - Add conditional formatting that highlights positive change green
+' negative change red
+
+
+'Set Variable section********************************
+'Set variable for the following
+'Worksheet is Ws
+Dim Ws As Worksheet
+'*loop variable information
+' Variable for Last_Row Column A
+Dim Last_Row As Long
+'Variable for Last_Row2 Column I at end
+Dim Last_Row2 As Long
+'*provide Ticker information
+'Next row to go to is Column I
+Dim Next_Row As Long
+'Opening price found in Column C
+Dim Opening_Price As Double
+'Closing Price found in Column F
+Dim Closing_Price As Double
+'Change between open and close
+Dim Year_Change As Double
+'*provide closing price
+'Percent Change between Open Price
+Dim Percent_Change As Double
+'*provide closing price
+'Add Ticker_Volumn to Column G
+Dim Ticker_Volumn As Double
+'*reset the ticker
+'Greatest Increase Value Ticker
+Dim Greatest_Ticker As String
+'Greatest Decrease Value Ticker
+Dim Decrease_Ticker As String
+'Greatest Volume Ticker
+Dim GreatVol_Ticker As String
+'Greatest Increase Value
+Dim Increase_Value As Double
+'Greatest Decrease Value
+Dim Decrease_Value As Double
+'Greatest Volume Value
+Dim GreatVol_Value As Double
+
+For Each Ws In ThisWorkbook.Sheets
+
+' Alphabetical and Chronological order the worksheets****************
+   Ws.Columns("A:G").Sort Key1:=Ws.Range("B1"), _
+   Order1:=xlAscending, Header:=xlYes
+   Ws.Columns("A:G").Sort Key1:=Ws.Range("A1"), _
+   Order1:=xlAscending, Header:=xlYes
+
+' Next variables for loop
+   Last = Ws.Cells(Rows.Count, 1).End(xlUp).Row
+   Next_Row = 1
+   Ticker_Volume = 0
+   Open_Price = Ws.Range("C2")
+
+' Headers
+   Ws.Range("I1") = "Ticker"
+   Ws.Range("J1") = "Yearly Change"
+   Ws.Range("K1") = "Percent Change"
+   Ws.Range("L1") = "Total Stock Volume"
+   Ws.Range("P1") = "Ticker"
+   Ws.Range("Q1") = "Value"
+   Ws.Range("O2") = "Greatest % Increase"
+   Ws.Range("O3") = "Greatest % Decrease"
+   Ws.Range("O4") = "Greatest Total Volume"
+
+'For Loop
+        For TickerList = 2 To Last_Row
+            If Ws.Cells(TickerList, 1) = Ws.Cells(TickerList + 1, 1) Then
+                Ticker_Volume = Ticker_Volume + Ws.Cells(TickerList, 7)
+            Else
+                Closing_Price = Ws.Cells(TickerList, 6)
+                Ticker_Volume = Ticker_Volume + Ws.Cells(TickerList, 7)
+                Year_Change = Closing_Price - Opening_Price
+                ' If LOpen is 0 there will be an error
+                On Error Resume Next
+                Percent_Change = (Closing_Price - Opening_Price) / Opening_Price
+                If Err.Number <> 0 Then
+                    Percent_Change = 0
+                End If
+                Next_Row = Next_Row + 1
+                Ws.Cells(Next_Row, 9) = Ws.Cells(TickerList, 1)
+                Ws.Cells(Next_Row, 10) = Year_Change
+                Ws.Cells(Next_Row, 11) = Percent_Change
+                Ws.Cells(Next_Row, 12) = Ticker_Volume
+                Ticker_Volume = 0
+                Opening_Price = Ws.Cells(TickerList + 1, 3)
+            End If
+        Next TickerList
+        
+' Summary
+    
+        Last_Row2 = Ws.Cells(Rows.Count, 9).End(xlUp).Row
+        
+' Challenge Variables
+
+        Greatest_Ticker = Ws.Range("I2")
+        Decreased_Ticker = Ws.Range("I2")
+        GreatestVol_Ticker = Ws.Range("I2")
+        Increased_Value = Ws.Range("K2")
+        Decreased_Value = Ws.Range("K2")
+        GreatestVol_Value = Ws.Range("L2")
+        
+' For Loop Greatest Increase
+        For ShortList = 2 To Last_Row2
+            If Ws.Cells(ShortList + 1, 11) > Increased_Value And _
+            Ws.Cells(ShortList + 1, 11) <> "" Then
+                Increased_Value = Ws.Cells(ShortList + 1, 11)
+                Increased_Ticker = Ws.Cells(ShortList + 1, 9)
+            
+            End If
+        
+        Next ShortList
+        
+' For Loop Greatest Decrease
+        For ShortList = 2 To Last_Row2
+            If Ws.Cells(ShortList + 1, 11) < DecValue And _
+            Ws.Cells(ShortList + 1, 11) <> "" Then
+                Decreased_Value = Ws.Cells(ShortList + 1, 11)
+                Decreased_Ticker = Ws.Cells(ShortList + 1, 9)
+            
+            End If
+            
+        Next ShortList
+        
+' For Loop Greatest Total Volume
+        For ShortList = 2 To Last_Row2
+            If Ws.Cells(ShortList + 1, 12) > GreatestVol_Value And _
+            Ws.Cells(ShortList + 1, 12) <> 0 Then
+                GreatestVol_Value = Ws.Cells(ShortList + 1, 12)
+                GreatestVol_Ticker = Ws.Cells(ShortList + 1, 9)
+                
+            End If
+            
+        Next ShortList
+
+' Dump loops into table
+        Ws.Range("P2") = Greatest_Ticker
+        Ws.Range("P3") = Decrease_Ticker
+        Ws.Range("P4") = GreatestVol_Ticker
+        Ws.Range("Q2") = Increase_Value
+        Ws.Range("Q3") = Decrease_Value
+        Ws.Range("Q4") = GreastVol_lValue
+    
+' Conditional Formatting
+         For ShortList = 2 To Last_Row2
+            If Ws.Cells(ShortList, 10) <= 0 Then
+                Ws.Cells(ShortList, 10).Interior.Color = RGB(255, 0, 0)
+                
+            Else
+            
+                Ws.Cells(ShortList, 10).Interior.Color = RGB(0, 255, 0)
+            
+            End If
+            
+        Next ShortList
+        
+' Continued formatting
+
+        Ws.Range("J2:J" & LRow2).NumberFormat = "0.000000000"
+        Ws.Range("K2:K" & LRow2).NumberFormat = "0.00%"
+        Ws.Range("Q2:Q3").NumberFormat = "0.00%"
+        Ws.Cells.Columns.AutoFit
+
+    Next Ws
+    
+   
+End Sub
+
