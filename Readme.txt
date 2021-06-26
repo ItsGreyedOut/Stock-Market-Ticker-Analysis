@@ -15,5 +15,5 @@ Create a script that will loop through all the stocks for one year and output th
 
 CHALLENGES
 
-Your solution will also be able to return the stock with the "Greatest % increase", "Greatest % decrease" and "Greatest total volume". The solution will look as follows:
+Your solution will also be able to return the stock with the "Greatest % increase", "Greatest % decrease" and "Greatest total volume".
 
